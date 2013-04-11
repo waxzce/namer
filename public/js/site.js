@@ -12,11 +12,13 @@ var btn_delete_click = function(e){
 };
 
 var add_word = function(w){
-   var c = $('#templater div.word-block').clone();
-   c.find('input[type=text]').val(w);
-   c.find('.btn-fix').click(btn_fix_click);
-   c.find('.btn-delete').click(btn_delete_click);
-   $('div.words').prepend(c);
+   if(!_.contains($('.words input[type="text"]').map(function(i,e){return $(e).val();}),w)){
+      var c = $('#templater div.word-block').clone();
+      c.find('input[type=text]').val(w);
+      c.find('.btn-fix').click(btn_fix_click);
+      c.find('.btn-delete').click(btn_delete_click);
+      $('div.words').prepend(c);
+   }
 }
 
 $(function(){
