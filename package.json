@@ -23,7 +23,7 @@
   ],
   "main": "lib/namer",
   "engines": {
-    "node": ">= 0.6.0"
+    "node": ">= 0.9.0"
   },
   "scripts": {
     "test": "grunt test"
@@ -38,7 +38,9 @@
     "uglify-js": "*",
     "uglifycss": "*",
     "express-compiless":"*",
-    "whoisjs":"x"
+    "whoisjs":"x",
+    "node-uuid":"x", 
+    "socket.io":"0.9.x"
   },
   "devDependencies": {
     "grunt-simple-mocha": "~0.2.0",

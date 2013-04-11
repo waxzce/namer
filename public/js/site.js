@@ -78,5 +78,12 @@ $(function(){
       add_word(input.val());
       input.val('');
    });
+   
+   var socket = io.connect(window.location.protocol+'//'+window.location.host);
+   socket.on('news', function (data) {
+     console.log(data);
+     socket.emit('plop', { my: 'data' });
+   });
+   
 });
 
