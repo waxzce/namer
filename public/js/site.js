@@ -11,7 +11,22 @@ var btn_delete_click = function(e){
       t.parent('div.word-block').remove();
 };
 
+var add_word = function(w){
+   var c = $('#templater div.word-block').clone();
+   c.find('input[type=text]').val(w);
+   c.find('.btn-fix').click(btn_fix_click);
+   c.find('.btn-delete').click(btn_delete_click);
+   $('div.words').prepend(c);
+}
+
 $(function(){
    $('.btn-fix').click(btn_fix_click);
    $('.btn-delete').click(btn_delete_click);
-})
+   $('#form_add_word').submit(function(e){
+      e.preventDefault();
+      var input = $(e.target).find('input.search-query');
+      add_word(input.val());
+      input.val('');
+   });
+});
+

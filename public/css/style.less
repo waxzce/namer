@@ -1,23 +1,32 @@
 @words:#78705D;
+@wordadd:#65CC9D;
 @bodyback:#3E3C33;
 @darkwrite:#3E3C33;
 
 *{
-color:#F2ECE3;
+   color:#F2ECE3;
 }
 
 body{
-background-color:@bodyback;
+   background-color:@bodyback;
 }
 
 #templater{
    display:none;
 }
-
+.inside-block(@bgcolor){
+   margin:5px;
+   padding:10px;
+   background-color:@bgcolor;
+}
 .words {
-    margin:5px;
-    padding:10px;
-    background-color:@words;
+   .inside-block(@words)
+}
+.word-add {
+   .inside-block(@wordadd);
+   .btn, .btn i{
+      color:@darkwrite;
+   }
 }
 
 .page-footer{
