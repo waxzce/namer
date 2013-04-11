@@ -3,6 +3,7 @@
 @bodyback:#3E3C33;
 @darkwrite:#3E3C33;
 @proposals:#CEC7B6;
+@dn:#FFD75D;
 
 *{
    color:#F2ECE3;
@@ -28,6 +29,14 @@ body{
 }
 .proposals {
    .inside-block(@proposals);
+}
+.dn {
+   .inside-block(@dn);
+   color:@darkwrite;
+   label{
+   color:@darkwrite;
+      
+   }
 }
 .word-add {
    .inside-block(@wordadd);

@@ -25,6 +25,10 @@ var add_word = function(w){
    }
 };
 
+var get_tlds = function(){
+return    $('.dn input[type="checkbox"]:checked').map(get_val);
+}
+
 var word_mix = function(){
    var a = $('.words input[type="text"]'), p = [], s = [], w = [];
    _.each(a, function(element, index, list){
@@ -50,6 +54,17 @@ var word_mix = function(){
       }, this));
    }, this)));
    
+   var tlds = get_tlds();
+   _.each(www, function(newword){
+      var c = $('#templater div.prop-block').clone();
+      c.find('h6').text(newword);
+      var u = c.find('ul');
+      _.each(tlds, function(t){
+         u.append('<li class="to_check">'+newword + '.' + t+'</li>');
+      }, this);
+      
+      $('div.proposals').prepend(c);
+   }, this);
    console.log(p,s, w, www);
 };
 
