@@ -1,3 +1,5 @@
+(function(){
+
 var socket = io.connect(window.location.protocol+'//'+window.location.host);
 
 var word_change_event = function(e){
@@ -99,3 +101,4 @@ $(function(){
    });
 });
 
+})();
