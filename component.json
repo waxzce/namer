@@ -1,0 +1,10 @@
+{
+    "name":"namer",
+    "main":[
+        "./public/css/style.css",
+        "./public/js/site.js"
+    ],
+    "dependencies":{
+        "bootstrap":"~2.2.2"
+    }
+}

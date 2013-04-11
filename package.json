@@ -1,0 +1,50 @@
+{
+  "name": "namer",
+  "description": "Help people to find name to product and check domain avaibility",
+  "version": "0.1.0",
+  "homepage": "https://github.com/waxzce/namer",
+  "author": {
+    "name": "Quentin ADAM",
+    "email": "quentin.adam@waxzce.org",
+    "url": "http://www.waxzce.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/waxzce/namer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/waxzce/namer/issues"
+  },
+  "licenses": [
+    {
+      "type": "AGPL",
+      "url": "https://github.com/waxzce/namer/blob/master/LICENSE-AGPL"
+    }
+  ],
+  "main": "lib/namer",
+  "engines": {
+    "node": ">= 0.6.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "dependencies": {
+    "connect-cachify": "*",
+    "winston": "*",
+    "winston-request-logger": "*",
+    "jade": "*",
+    "nconf": "*",
+    "express": "*",
+    "uglify-js": "*",
+    "uglifycss": "*",
+    "express-compiless":"*",
+    "whoisjs":"x"
+  },
+  "devDependencies": {
+    "grunt-simple-mocha": "~0.2.0",
+    "mocha": "~1.6.0",
+    "should": "~1.2.0",
+    "grunt": "~0.3.17"
+  },
+  "keywords": []
+}
