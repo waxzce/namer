@@ -1,8 +1,20 @@
+var socket = io.connect(window.location.protocol+'//'+window.location.host);
+
+var word_change_event = function(e){
+   socket.emit('word_change_event', {
+      word:e.val(), 
+      prefix:e.data('prefix'), 
+      suffix:e.data('suffix')
+   });
+};
+
 var btn_fix_click = function(e){
       e.stopPropagation();
       var t = $(e.target), t = (t.prop("tagName") == 'I' ? t.parent(): t);
       t.toggleClass('btn-success').toggleClass('btn-danger');
-      t.siblings('input[type=text]').data((t.hasClass('btn-suffix') ? 'suffix': 'prefix'), (t.hasClass('btn-success') ? true: false));
+      var i = t.siblings('input[type=text]');
+      i.data((t.hasClass('btn-suffix') ? 'suffix': 'prefix'), (t.hasClass('btn-success') ? true: false));
+      word_change_event(i);
 };
 
 var btn_delete_click = function(e){
@@ -18,10 +30,12 @@ var get_val = function(i, e){
 var add_word = function(w){
    if(!_.contains($('.words input[type="text"]').map(get_val),w)){
       var c = $('#templater div.word-block').clone();
-      c.find('input[type=text]').val(w);
+      var i = c.find('input[type=text]');
+      i.val(w);
       c.find('.btn-fix').click(btn_fix_click);
       c.find('.btn-delete').click(btn_delete_click);
       $('div.words').prepend(c);
+      word_change_event(i);
    }
 };
 
@@ -79,11 +93,9 @@ $(function(){
       input.val('');
    });
    
-   var socket = io.connect(window.location.protocol+'//'+window.location.host);
-   socket.on('news', function (data) {
-     console.log(data);
-     socket.emit('plop', { my: 'data' });
+   socket.on('connect', function () { 
+      var p = window.location.pathname 
+      socket.emit('chanel_choice', {chanel_id:p.substring(p.lastIndexOf('/'))});
    });
-   
 });
 

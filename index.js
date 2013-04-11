@@ -23,10 +23,15 @@ module.exports = function(app, server) {
 
 
     io.sockets.on('connection', function (socket) {
-      socket.emit('news', { hello: 'world' });
-      socket.on('plop', function (data) {
-        console.log(data);
-      });
+       socket.on('chanel_choice', function(data) {
+   		    socket.join(data.chanel_id);
+       });
+       
+       socket.on('word_change_event', function(data) {
+   		    console.log(io.sockets.manager.roomClients[socket.id]);
+       });
+       
+      
     });
 
 
