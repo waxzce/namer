@@ -10,6 +10,16 @@ var word_change_event = function(e){
    });
 };
 
+var word_change_listener = function(e){
+   var w = $('.words input[type="text"]').filter(function(){return e.word == $(this).val()});
+   if(w.length == 0){
+      add_word(e.word);
+   }else{
+      btn_fix_data_drive(w, 'prefix', e);
+      btn_fix_data_drive(w, 'suffix', e);
+   }
+};
+
 var btn_fix_click = function(e){
       e.stopPropagation();
       var t = $(e.target), t = (t.prop("tagName") == 'I' ? t.parent(): t);
@@ -17,6 +27,11 @@ var btn_fix_click = function(e){
       var i = t.siblings('input[type=text]');
       i.data((t.hasClass('btn-suffix') ? 'suffix': 'prefix'), (t.hasClass('btn-success') ? true: false));
       word_change_event(i);
+};
+
+var btn_fix_data_drive = function(w, ps, e){
+   w.siblings('.btn-'+ps).addClass((e[ps] ? 'btn-success' : 'btn-danger')).removeClass((e[ps] ? 'btn-danger' : 'btn-success'));
+   w.data(ps, e[ps]);
 };
 
 var btn_delete_click = function(e){
@@ -30,7 +45,7 @@ var get_val = function(i, e){
 };
 
 var add_word = function(w){
-   if(!_.contains($('.words input[type="text"]').map(get_val),w)){
+   if(!(_.contains($('.words input[type="text"]').map(get_val),w) || w == '')){
       var c = $('#templater div.word-block').clone();
       var i = c.find('input[type=text]');
       i.val(w);
@@ -97,8 +112,10 @@ $(function(){
    
    socket.on('connect', function () { 
       var p = window.location.pathname 
-      socket.emit('chanel_choice', {chanel_id:p.substring(p.lastIndexOf('/'))});
+      socket.emit('chanel_choice', {chanel_id:p.substring(p.lastIndexOf('/')+1)});
    });
+   socket.on('word_change_event', word_change_listener);
+   
 });
 
 })();

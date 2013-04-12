@@ -24,11 +24,19 @@ module.exports = function(app, server) {
 
     io.sockets.on('connection', function (socket) {
        socket.on('chanel_choice', function(data) {
-   		    socket.join(data.chanel_id);
+   		    socket.join('B--'+data.chanel_id);
        });
        
        socket.on('word_change_event', function(data) {
-   		    console.log(io.sockets.manager.roomClients[socket.id]);
+          for(var i in io.sockets.manager.roomClients[socket.id]){
+             console.log(i);
+             
+             i = i.substring(1);
+             console.log(i);
+             if(i.match(/B\-\-.+/)){
+                io.sockets.in(i).emit('word_change_event', data);
+             }
+          }
        });
        
       
