@@ -6,14 +6,16 @@ var word_change_event = function(e){
    socket.emit('word_change_event', {
       word:e.val(), 
       prefix:e.data('prefix'), 
-      suffix:e.data('suffix')
+      suffix:e.data('suffix'),
+      chanel_id:get_chanel_id()
    });
+   word_mix();
 };
 
 var word_change_listener = function(e){
    var w = $('.words input[type="text"]').filter(function(){return e.word == $(this).val()});
    if(w.length == 0){
-      add_word(e.word);
+      add_word_dom(e.word);
    }else{
       btn_fix_data_drive(w, 'prefix', e);
       btn_fix_data_drive(w, 'suffix', e);
@@ -44,15 +46,18 @@ var get_val = function(i, e){
    return $(e).val();
 };
 
+var add_word_dom = function(w){
+   var c = $('#templater div.word-block').clone();
+   var i = c.find('input[type=text]');
+   i.val(w);
+   c.find('.btn-fix').click(btn_fix_click);
+   c.find('.btn-delete').click(btn_delete_click);
+   $('div.words').prepend(c);
+   return i;
+};
 var add_word = function(w){
    if(!(_.contains($('.words input[type="text"]').map(get_val),w) || w == '')){
-      var c = $('#templater div.word-block').clone();
-      var i = c.find('input[type=text]');
-      i.val(w);
-      c.find('.btn-fix').click(btn_fix_click);
-      c.find('.btn-delete').click(btn_delete_click);
-      $('div.words').prepend(c);
-      word_change_event(i);
+      word_change_event(add_word_dom(w));
    }
 };
 
@@ -78,25 +83,49 @@ var word_mix = function(){
       }
    },this);
    var www = w.concat(_.flatten(_.map(p, function(pp, iii, lll){
-      console.log(iii);
-      console.log(lll);
       return _.compact(_.map(s, function(ss){
          return (pp != ss ? pp + ss : null);
       }, this));
    }, this)));
    
+   $('div.proposals div.prop-block').css('display', 'none');
    var tlds = get_tlds();
    _.each(www, function(newword){
-      var c = $('#templater div.prop-block').clone();
-      c.find('h6').text(newword);
-      var u = c.find('ul');
-      _.each(tlds, function(t){
-         u.append('<li class="to_check">'+newword + '.' + t+'</li>');
-      }, this);
+      var item = $('#prop__'+newword);
+      if(item.length < 1){
+         var c = $('#templater div.prop-block').clone();
+         c.attr('id','prop__'+newword);
+         c.find('h6').text(newword);
+         var u = c.find('ul');
+         _.each(tlds, function(t){
+            u.append('<li class="label to_check">'+newword + '.' + t+'</li>');
+         }, this);
       
-      $('div.proposals').prepend(c);
+         $('div.proposals').prepend(c);
+      }else{
+         item.css('display', 'block');
+      }
    }, this);
-   console.log(p,s, w, www);
+   launch_whois();
+};
+
+var launch_whois = function(){
+   _.each($('div.proposals li.to_check').toArray(), function(li){
+      li = $(li);
+      li.attr('id',li.text().replace('.','___'));
+      li.addClass('label-info');
+      socket.emit('whois_ask', {domain_name:li.text(), chanel_id:get_chanel_id()});
+   });
+};
+
+var whois_know_event = function(whois_result){
+   console.log(arguments);
+   $('#'+whois_result.domain_name.replace('.','___')).removeClass('label-info').addClass((whois_result.available ? 'label-success' : 'label-important'))
+}
+
+var get_chanel_id = function(){
+   var p = window.location.pathname;
+   return p.substring(p.lastIndexOf('/')+1);
 };
 
 $(function(){
@@ -111,10 +140,10 @@ $(function(){
    });
    
    socket.on('connect', function () { 
-      var p = window.location.pathname 
-      socket.emit('chanel_choice', {chanel_id:p.substring(p.lastIndexOf('/')+1)});
+      socket.emit('chanel_choice', {chanel_id:get_chanel_id()});
    });
    socket.on('word_change_event', word_change_listener);
+   socket.on('whois_know', whois_know_event);
    
 });
 

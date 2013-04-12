@@ -2,6 +2,8 @@
 module.exports = function(app, server) {
 
    var uuid = require('node-uuid')
+   ,   whois = require('whoisjs').whois
+   ,   sys = require('sys')
    , io = require('socket.io').listen(server);
 
     // Home/main
@@ -28,14 +30,23 @@ module.exports = function(app, server) {
        });
        
        socket.on('word_change_event', function(data) {
-          for(var i in io.sockets.manager.roomClients[socket.id]){
-             console.log(i);
+          
+                io.sockets.in(data.chanel_id).emit('word_change_event', data);
              
-             i = i.substring(1);
-             console.log(i);
-             if(i.match(/B\-\-.+/)){
-                io.sockets.in(i).emit('word_change_event', data);
-             }
+          
+       });
+       
+       socket.on('whois_ask', function(data) {
+          try{
+          var who = new whois();
+          who.query(data.domain_name, function(res) {
+             data['available'] = res.available();
+             //console.log(sys.inspect(data));
+             
+             io.sockets.emit('whois_know', data); //in(data.chanel_id).
+          }.bind(this));
+          }catch(err){
+             console.log(err);
           }
        });
        
