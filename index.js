@@ -30,11 +30,13 @@ module.exports = function(app, server) {
        });
        
        socket.on('word_change_event', function(data) {
-          
-                io.sockets.in(data.chanel_id).emit('word_change_event', data);
-             
-          
+          io.sockets.in('B--'+data.chanel_id).emit('word_change_event', data);
        });
+
+       socket.on('word_del_event', function(data) {
+          io.sockets.in('B--'+data.chanel_id).emit('word_del_event', data);
+       });
+
        
        socket.on('whois_ask', function(data) {
           try{
@@ -53,11 +55,11 @@ module.exports = function(app, server) {
                     return 'unknown';
                  }
               }(res);
-            io.sockets.emit('whois_know', data); //in(data.chanel_id).
+            io.sockets.in('B--'+data.chanel_id).emit('whois_know', data); //in(data.chanel_id).
           }.bind(this));
           }catch(err){
              data['status'] = 'error';
-             io.sockets.emit('whois_know', data); //in(data.chanel_id).
+             io.sockets.in('B--'+data.chanel_id).emit('whois_know', data); //in(data.chanel_id).
           }
        });
        
