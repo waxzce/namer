@@ -40,13 +40,24 @@ module.exports = function(app, server) {
           try{
           var who = new whois();
           who.query(data.domain_name, function(res) {
-             data['available'] = res.available();
-             //console.log(sys.inspect(data));
-             
-             io.sockets.emit('whois_know', data); //in(data.chanel_id).
+             data['status'] = function(response){
+                 if (response.available()){
+                    return 'available';
+                 }else if(res.unavailable){
+                    return 'unavailable';
+                 }else if(res.timeout){
+                    return 'timeout';
+                 }else if(res.error){
+                    return 'error';
+                 }else {
+                    return 'unknown';
+                 }
+              }(res);
+            io.sockets.emit('whois_know', data); //in(data.chanel_id).
           }.bind(this));
           }catch(err){
-             console.log(err);
+             data['status'] = 'error';
+             io.sockets.emit('whois_know', data); //in(data.chanel_id).
           }
        });
        

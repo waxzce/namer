@@ -119,9 +119,16 @@ var launch_whois = function(){
 };
 
 var whois_know_event = function(whois_result){
-   console.log(arguments);
-   $('#'+whois_result.domain_name.replace('.','___')).removeClass('label-info').addClass((whois_result.available ? 'label-success' : 'label-important'))
-}
+   $('#'+whois_result.domain_name.replace('.','___')).removeClass('label-info').addClass(function(wr){
+      switch(wr.status){
+         case 'available' : 
+            return 'label-success';
+         case 'unavailable' : 
+            return 'label-important';
+         default : 
+            return 'label-warning';
+      }}(whois_result));
+};
 
 var get_chanel_id = function(){
    var p = window.location.pathname;
