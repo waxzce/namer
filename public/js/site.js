@@ -19,7 +19,7 @@ var Word = (function(){
        */
    };
    
-   p.send_change = function
+  // p.send_change = function
    
    return w;
 
