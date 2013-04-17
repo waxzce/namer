@@ -1,6 +1,6 @@
 {
-    "domain":"http://localhost",
-    "port":3000,
+    "domain":"http://namer.cleverapps.io",
+    "port":8080,
     "cachify":false,
     "assets":{
         "/components/bootstrap/docs/assets/css/bootstrap.css":[

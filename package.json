@@ -21,7 +21,7 @@
       "url": "https://github.com/waxzce/namer/blob/master/LICENSE-AGPL"
     }
   ],
-  "main": "lib/namer",
+  "main": "app.js",
   "engines": {
     "node": ">= 0.9.0"
   },

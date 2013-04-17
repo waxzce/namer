@@ -2,6 +2,29 @@
 
 var socket = io.connect(window.location.protocol+'//'+window.location.host);
 
+var Word = (function(){
+
+   var W = function (o) {
+       this.initialize(o);
+   }
+   var p = W.prototype = new EventProducer.EventProducer();
+   p.initialize_event = p.initialize;
+
+   p.initialize = function (o) {
+       this.initialize_event();
+       this.fields = o;
+       /*
+       elem :
+       word : 
+       */
+   };
+   
+   p.send_change = function
+   
+   return w;
+
+})();
+
 var word_change_event = function(e){
    socket.emit('word_change_event', {
       word:e.val(), 
