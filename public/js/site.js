@@ -2,30 +2,100 @@
 
 var socket = io.connect(window.location.protocol+'//'+window.location.host);
 
+// Utils 
+
+var get_chanel_id = function(){
+   var p = window.location.pathname;
+   return p.substring(p.lastIndexOf('/')+1);
+};
+
+var get_val = function(i, e){
+   return $(e).val();
+};
+
+
+// Word object
+
 var Word = (function(){
 
    var W = function (o) {
        this.initialize(o);
-   }
-   var p = W.prototype = new EventProducer.EventProducer();
-   p.initialize_event = p.initialize;
-
-   p.initialize = function (o) {
-       this.initialize_event();
-       this.fields = o;
-       /*
-       elem :
-       word : 
-       */
    };
    
-  // p.send_change = function
+   var p = W.prototype = new EventProducer();
    
-   return w;
+   p.initialize_event = p.initialize;
+
+   // init & bindings
+   
+   p.initialize = function (o) {
+       this.initialize_event();
+       this.addEventListener('changer', this.mix);
+   };
+   
+   p.socket_bind = function (s) {
+      s.on('word_change_event', _.bind(this.change_event,this));
+      s.on('word_del_event', _.bind(this.delete_event,this));
+       
+   };
+   
+   // socket send
+   
+   p.newOrChange = function(e){   
+      e['chanel_id'] = get_chanel_id();
+      socket.emit('word_change_event', e);   
+   };
+   
+   p.delete = function(e){   
+      e['chanel_id'] = get_chanel_id();
+      socket.emit('word_del_event', e);
+        
+   };
+   
+   // socket listeners
+   
+   p.change_event = function(e){
+      var w = $('.words input[type="text"]').filter(function(){return e.word == $(this).val()});
+      if(w.length == 0){
+         add_word_dom(e.word);
+      }else{
+         btn_fix_data_drive(w, 'prefix', e);
+         btn_fix_data_drive(w, 'suffix', e);
+      }   
+      this.fireEvent('changer');
+   };
+   
+   p.delete_event = function(e){
+      var w = $('.words input[type="text"]').filter(function(){return e.word == $(this).val()});
+      w.parent('div.word-block').remove();
+      this.fireEvent('changer');
+   };
+   
+   // mix
+   
+   p.mix = function(){
+      word_mix();
+   };
+   
+   // DOM
+     
+   p.buildFromDom = function(d){
+      return {
+           word:d.val(), 
+           prefix:d.data('prefix'), 
+           suffix:d.data('suffix')
+        }
+   };
+   
+   // return just one instance
+   return new W();
 
 })();
 
-var word_change_event = function(e){
+
+
+/*
+var word_change_event = function(e){   
    socket.emit('word_change_event', {
       word:e.val(), 
       prefix:e.data('prefix'), 
@@ -33,6 +103,7 @@ var word_change_event = function(e){
       chanel_id:get_chanel_id()
    });
    word_mix();
+   
 };
 
 var word_del_event = function(e){
@@ -51,7 +122,7 @@ var word_change_listener = function(e){
    }else{
       btn_fix_data_drive(w, 'prefix', e);
       btn_fix_data_drive(w, 'suffix', e);
-   }
+   }   
 };
 
 var word_del_listener = function(e){
@@ -59,6 +130,8 @@ var word_del_listener = function(e){
    w.parent('div.word-block').remove();
    word_mix();
 };
+*/
+
 
 var btn_fix_click = function(e){
       e.stopPropagation();
@@ -66,7 +139,7 @@ var btn_fix_click = function(e){
       t.toggleClass('btn-success').toggleClass('btn-danger');
       var i = t.siblings('input[type=text]');
       i.data((t.hasClass('btn-suffix') ? 'suffix': 'prefix'), (t.hasClass('btn-success') ? true: false));
-      word_change_event(i);
+      Word.newOrChange(Word.buildFromDom(i));
 };
 
 var btn_fix_data_drive = function(w, ps, e){
@@ -78,13 +151,10 @@ var btn_delete_click = function(e){
       e.stopPropagation();
       var t = $(e.target), t = (t.prop("tagName") == 'I' ? t.parent(): t);
       var i = t.parent('div.word-block');
-      word_del_event(i.find('input[type="text"]'));
-      i.remove();
+      Word.delete(Word.buildFromDom(i.find('input[type="text"]')));
 };
 
-var get_val = function(i, e){
-   return $(e).val();
-};
+
 
 var add_word_dom = function(w){
    var c = $('#templater div.word-block').clone();
@@ -97,7 +167,9 @@ var add_word_dom = function(w){
 };
 var add_word = function(w){
    if(!(_.contains($('.words input[type="text"]').map(get_val),w) || w == '')){
-      word_change_event(add_word_dom(w));
+      Word.newOrChange(Word.buildFromDom(input));
+      
+      //word_change_event(add_word_dom(w));
    }
 };
 
@@ -170,10 +242,7 @@ var whois_know_event = function(whois_result){
       }}(whois_result));
 };
 
-var get_chanel_id = function(){
-   var p = window.location.pathname;
-   return p.substring(p.lastIndexOf('/')+1);
-};
+
 
 $(function(){
    $('.btn-fix').click(btn_fix_click);
@@ -182,15 +251,16 @@ $(function(){
    $('#form_add_word').submit(function(e){
       e.preventDefault();
       var input = $(e.target).find('input.search-query');
-      add_word(input.val());
+      Word.newOrChange(Word.buildFromDom(input));
+//      add_word(input.val());
       input.val('');
    });
    
    socket.on('connect', function () { 
       socket.emit('chanel_choice', {chanel_id:get_chanel_id()});
    });
-   socket.on('word_change_event', word_change_listener);
-   socket.on('word_del_event', word_del_listener);
+   Word.socket_bind(socket);
+
    socket.on('whois_know', whois_know_event);
    
 });
