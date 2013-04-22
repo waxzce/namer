@@ -57,7 +57,7 @@ var Word = (function(){
    p.change_event = function(e){
       var w = $('.words input[type="text"]').filter(function(){return e.word == $(this).val()});
       if(w.length == 0){
-         add_word_dom(e.word);
+         this.add_word_dom(e.word);
       }else{
          btn_fix_data_drive(w, 'prefix', e);
          btn_fix_data_drive(w, 'suffix', e);
@@ -85,6 +85,16 @@ var Word = (function(){
            prefix:d.data('prefix'), 
            suffix:d.data('suffix')
         }
+   };
+   
+   p.add_word_dom = function(w){
+      var c = $('#templater div.word-block').clone();
+      var i = c.find('input[type=text]');
+      i.val(w);
+      c.find('.btn-fix').click(btn_fix_click);
+      c.find('.btn-delete').click(btn_delete_click);
+      $('div.words').prepend(c);
+      return i;
    };
    
    // return just one instance
@@ -155,7 +165,7 @@ var btn_delete_click = function(e){
 };
 
 
-
+/*
 var add_word_dom = function(w){
    var c = $('#templater div.word-block').clone();
    var i = c.find('input[type=text]');
@@ -165,6 +175,7 @@ var add_word_dom = function(w){
    $('div.words').prepend(c);
    return i;
 };
+*/
 var add_word = function(w){
    if(!(_.contains($('.words input[type="text"]').map(get_val),w) || w == '')){
       Word.newOrChange(Word.buildFromDom(input));
